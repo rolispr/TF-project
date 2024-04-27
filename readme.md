@@ -51,3 +51,29 @@ start adding the other networking components we need like the subnet. We should 
 to the attributes through a `variables.tf` file but we'll keep it super basic and just manually put in values.
 
 Now let's run `tf plan` and see the results. Looks good. Now let's commit.
+
+Let's now focus on the meat of ECS: it's service and task defintion, as well as creating a role for task
+execution. Let's tf apply to see our plan, what terraform wants to do, and then apply what we have.
+
+As we can see, we cant leave the task-definition attribute blank:
+```
+...
+aws_ecs_cluster.tf-ex-cluster: Creating...
+aws_ecs_cluster.tf-ex-cluster: Still creating... [10s elapsed]
+aws_ecs_cluster.tf-ex-cluster: Creation complete after 11s [id=arn:aws:ecs:us-east-2:524066333174:cluster/tf_hellow]
+aws_iam_role.task-execution: Creating...
+aws_ecs_service.tf-ex-service: Creating...
+aws_iam_role.task-execution: Creation complete after 1s [id=tf_hellow-ecs-execution]
+aws_iam_role_policy_attachment.attach-execution: Creating...
+aws_iam_role_policy_attachment.attach-execution: Creation complete after 0s [id=tf_hellow-ecs-execution-20240426235321253400000002]
+╷
+│ Error: creating ECS Service (tf-ex-service): InvalidParameterException: TaskDefinition can not be blank.
+│
+│   with aws_ecs_service.tf-ex-service,
+│   on main.tf line 22, in resource "aws_ecs_service" "tf-ex-service":
+│   22: resource "aws_ecs_service" "tf-ex-service" {
+│
+╵
+```
+
+So we need to create a dockerfile. Here, I'll use busybox. You could abs use Apache or Nginx but busybox it is!

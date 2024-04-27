@@ -1,3 +1,5 @@
+// we could add a terraform block here to say what this version of tf we're compatible with
+
 provider "aws" {
   region = "us-east-2"
 }
@@ -13,6 +15,38 @@ data "aws_subnets" "all" {
   }
 }
 
-resource "aws_ecs_cluster" "tf_ex_cluster" {
+resource "aws_ecs_cluster" "tf-ex-cluster" {
   name = "tf_hellow"
 }
+
+resource "aws_ecs_service" "tf-ex-service" {
+  name            = "tf-ex-service"
+  cluster         = aws_ecs_cluster.tf-ex-cluster.arn
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets = data.aws_subnets.all.ids
+  }
+}
+
+resource "aws_iam_role" "task-execution" {
+  name               = "${aws_ecs_cluster.tf-ex-cluster.name}-ecs-execution"
+  assume_role_policy = data.aws_iam_policy_document.assume-execution.json
+}
+
+resource "aws_iam_role_policy_attachment" "attach-execution" {
+  role       = aws_iam_role.task-execution.id
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+data "aws_iam_policy_document" "assume-execution" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["ecs-tasks.amazonaws.com"]
+    }
+  }
+}
+
