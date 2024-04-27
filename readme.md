@@ -21,8 +21,9 @@ access to AWS. Once we have this keypair, we need to add it to ~/.aws/credential
 Let's add a provider block. Normally, one would create seperate files and provide proper
 structure to the directory, but for this, let's dump all terraform code into a main.tf.
 
-Now that we have a provider, let's pull in our modules. But first, let's create a simple alias
-for our shell: `alias tf='terraform'` just let's us more easily type the command.
+Now that we have a provider, let's pull in our modules with `terraform init`.
+But first, let's create a simple alias for our shell: `alias tf='terraform'`
+just let's us more easily type the command.
 
 Let's commit these changes after Terraform is successfully initialized. While we're here, let's
 add a `.gitignore` since it will prevent git from storing files we dont necessarily need. We also
@@ -50,7 +51,7 @@ We see that terraform's able to read our default VPC. Great! Since time isnt on 
 start adding the other networking components we need like the subnet. We should put these values we provide
 to the attributes through a `variables.tf` file but we'll keep it super basic and just manually put in values.
 
-Now let's run `tf plan` and see the results. Looks good. Now let's commit.
+Now let's run `tf apply` and see the results. Looks good. Now let's commit.
 
 Let's now focus on the meat of ECS: it's service and task defintion, as well as creating a role for task
 execution. Let's tf apply to see our plan, what terraform wants to do, and then apply what we have.
