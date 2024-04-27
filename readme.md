@@ -72,8 +72,21 @@ aws_iam_role_policy_attachment.attach-execution: Creation complete after 0s [id=
 │   with aws_ecs_service.tf-ex-service,
 │   on main.tf line 22, in resource "aws_ecs_service" "tf-ex-service":
 │   22: resource "aws_ecs_service" "tf-ex-service" {
-│
 ╵
 ```
 
-So we need to create a dockerfile. Here, I'll use busybox. You could abs use Apache or Nginx but busybox it is!
+So we need to create a dockerfile. Here, I'll use busybox. You could abs use
+Apache or Nginx but busybox it is!
+
+# What we didnt do/what's remaining
+Typically, you would build the docker container, tag it, and push out to a
+container registry. Here, we would need to use the aws cli, or terraform, to
+create our ECR repo, then from the cli, using the docker cli, to tag and push
+our built container to this new repo. Then, we could return to our main.tf and
+add our task definition to our service, set our desired count, assign a public
+ip, set the specs we want to use like cpu, memory, the container image, the
+execution role, port mappings, ... etc.
+
+Then, if everything pans out, we could go to the cli once again and run 
+`aws ec2 describe-network-interfaces --network-interface-ids <ENI-ID> --query 'NetworkInterfaces[*].Association.PublicIp' --output text`
+and go the browser to be able to see a 'Hello, world!'.
